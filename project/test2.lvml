@@ -1,0 +1,45 @@
+<tests name="Some name" help="Description about the batch of tests below.">
+	<test name="test subjects" help="Some description">
+		<styles>
+		<style name="black" bg_color="0x000000" />
+		<style name="white" bg_color="0xFFFFFF" />
+		<style name="secondary" bg_color="0x2196F3" />
+		<style name="green" bg_color="0x4CAF50" />
+		<style name="purple" bg_color="0x800080" width="100"/>
+		<style name="red" bg_color="0xff0000" width="100"/>
+	</styles>
+		<view extends="obj" width="250" height="200" styles="red">
+			<CustomButton buttontext="No Red Button" styles="purple" x="25" y="25"/>
+		</view>
+	</test>
+
+	<test name="test in list with different sizes" help="Some description">
+        <styles>
+            <style name="black" bg_color="0x000000" />
+            <style name="white" bg_color="0xFFFFFF" />
+            <style name="secondary" bg_color="0x2196F3" />
+            <style name="green" bg_color="0x4CAF50" />
+            <style name="purple" bg_color="0x800080" width="100"/>
+			<style name="red" bg_color="0xff0000" width="100"/>
+		</styles>
+		<view extends="obj" width="250" height="200" styles="purple">
+            <CustomButton buttontext="No Purple Button" styles="red" x="25" y="25"/>
+		</view>
+	</test>
+
+	<test name="interactive test" help="Some description">
+        <styles>
+            <style name="black" bg_color="0x000000" />
+            <style name="white" bg_color="0xFFFFFF" />
+            <style name="secondary" bg_color="0x2196F3" />
+            <style name="green" bg_color="0x4CAF50" />
+            <style name="purple" bg_color="0x800080" width="100"/>
+			<style name="red" bg_color="0xff0000" width="100"/>
+		</styles>
+        <view extends="obj" width="250" height="200" styles="secondary">
+            <my_button x="25" y="25" buttontext="Red Button" buttonstyle="red"/>
+            <my_button x="25" y="75" buttontext="Purple Button"  buttonstyle="purple"/>
+            <my_button x="25" y="125" buttontext="Green Button"  buttonstyle="green"/>
+        </view> 
+	</test>
+</tests>

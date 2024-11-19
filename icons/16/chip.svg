@@ -1,0 +1,15 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="4" y="4" width="8" height="8" rx="2" fill="#0E0E0E"/>
+<path d="M8 3L8 2" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M5 3L5 2" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M11 3L11 2" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 5L13 5" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 8L13 8" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M14 11L13 11" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M8 14L8 13" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M5 14L5 13" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M11 14L11 13" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 5L2 5" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 8L2 8" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M3 11L2 11" stroke="#0E0E0E" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

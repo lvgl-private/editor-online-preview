@@ -1,0 +1,43 @@
+<tests name="Some name" help="Description about the batch of tests below.">
+	<styles>
+		<style name="black" bg_color="0x000000" />
+		<style name="white" bg_color="0xFFFFFF" />
+		<style name="secondary" bg_color="0x2196F3" />
+		<style name="green" bg_color="0x4CAF50" />
+		<style name="purple" bg_color="0x800080" width="100"/>
+		<style name="red" bg_color="0xff0000" width="100"/>
+	</styles>
+	<test name="test subjects" help="Some description">
+		<view extends="obj" width="250" height="200" styles="purple">
+			<CustomButton x="25" y="25"/>
+		</view>
+	</test>
+	<test name="test in list with different sizes" help="Some description">
+        <styles>
+            <style name="black" bg_color="0x000000" />
+            <style name="white" bg_color="0xFFFFFF" />
+            <style name="secondary" bg_color="0x2196F3" />
+            <style name="green" bg_color="0x4CAF50" />
+            <style name="purple" bg_color="0x800080" width="100"/>
+			<style name="red" bg_color="0xff0000" width="100"/>
+		</styles>
+		<view extends="obj" width="250" height="200" styles="green">
+            <CustomButton x="25" y="25"/>
+		</view>
+	</test>
+	<test name="interactive test" help="Some description">
+        <styles>
+            <style name="black" bg_color="0x000000" />
+            <style name="white" bg_color="0xFFFFFF" />
+            <style name="secondary" bg_color="0x2196F3" />
+            <style name="green" bg_color="0x4CAF50" />
+            <style name="purple" bg_color="0x800080" width="100"/>
+			<style name="red" bg_color="0xff0000" width="100"/>
+		</styles>
+        <view extends="obj" width="250" height="200" styles="secondary" x="50" y="100">
+            <my_button x="25" y="25" buttontext="A Red Button" buttonstyle="purple"/>
+            <my_button x="25" y="75" buttontext="A Purple Button"  buttonstyle="purple"/>
+            <my_button x="25" y="125" buttontext="A Green Button"  buttonstyle="green"/>
+        </view>
+	</test>
+</tests>

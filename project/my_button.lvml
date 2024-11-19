@@ -1,0 +1,18 @@
+<component>
+	<params>
+		<string name="buttontext"/>
+		<string name="buttonstyle"/>
+		<int name="radius" default="0"/>
+	</params>
+
+	<consts>
+		<px name="width" value="150"/>
+	</consts>
+
+	<styles>
+		<style name="blue" bg_color="0x0000ff"/>
+	</styles>
+	<view extends="button" style_radius="${radius}" styles="${buttonstyle}">
+		<label text="${buttontext}" align="center"/>
+	</view>
+</component>

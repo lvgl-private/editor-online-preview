@@ -1,0 +1,15 @@
+<component>
+    <styles>
+        <style name="black" bg_color="0x000000" />
+        <style name="white" bg_color="0xFFFFFF" />
+        <style name="secondary" bg_color="0x2196F3" />
+        <style name="green" bg_color="0x4CAF50" />
+        <style name="purple" bg_color="0x800080" width="100"/>
+        <style name="red" bg_color="0xff0000" width="100"/>
+    </styles>
+    <view extends="obj" width="250" height="200" styles="black" x="50" y="25">
+        <my_button x="25" y="25" buttontext="Red Button" buttonstyle="red"/>
+        <my_button x="25" y="75" buttontext="Purple Button"  buttonstyle="purple"/>
+        <my_button x="25" y="125" buttontext="A Green Button"  buttonstyle="green"/>
+    </view>    
+</component>

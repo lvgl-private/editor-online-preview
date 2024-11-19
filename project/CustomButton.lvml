@@ -1,0 +1,13 @@
+<component>
+    <params>
+		<string name="buttontext"/>
+		<string name="buttonstyle"/>
+		<int name="radius" default="0"/>
+	</params>
+    <styles>
+        <style name="blue" bg_color="0x2196F3" />
+    </styles>
+    <view extends="button" styles="${buttonstyle}">
+        <label text="${buttontext}"/>
+    </view>
+</component>

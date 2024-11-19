@@ -1,0 +1,13 @@
+<component>
+    <styles>
+        <style name="black" bg_color="0x000000" />
+        <style name="white" bg_color="0xFFFFFF" />
+        <style name="secondary" bg_color="0x2196F3" />
+        <style name="green" bg_color="0x4CAF50" />
+    </styles>
+    <view extends="obj" width="250" height="200" styles="black" x="50" y="100">
+        <CustomButton x="25" y="25"/>
+        <my_button x="25" y="50" buttontext="Red Button" />
+        <CustomButton2 x="25" y="100"/>
+    </view>    
+</component>

@@ -1,0 +1,49 @@
+{
+  "name": "project",
+  "path": "/project/",
+  "type": "directory",
+  "children": [
+    {
+      "name": "CustomButton.lvml",
+      "path": "/project/CustomButton.lvml",
+      "type": "file"
+    },
+    {
+      "name": "CustomButton2.lvml",
+      "path": "/project/CustomButton2.lvml",
+      "type": "file"
+    },
+    {
+      "name": "example1.lvml",
+      "path": "/project/example1.lvml",
+      "type": "file"
+    },
+    {
+      "name": "example2.lvml",
+      "path": "/project/example2.lvml",
+      "type": "file"
+    },
+    {
+      "name": "hello_world.c",
+      "path": "/project/hello_world.c",
+      "type": "file"
+    },
+    {
+      "name": "my_button.lvml",
+      "path": "/project/my_button.lvml",
+      "type": "file"
+    },
+    {
+      "name": "test.lvml",
+      "path": "/project/test.lvml",
+      "type": "file",
+      "isTest": true
+    },
+    {
+      "name": "test2.lvml",
+      "path": "/project/test2.lvml",
+      "type": "file",
+      "isTest": true
+    }
+  ]
+}
