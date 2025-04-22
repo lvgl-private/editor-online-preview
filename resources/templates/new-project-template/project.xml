@@ -1,0 +1,9 @@
+<project>
+    <targets>
+        <target name="target1">
+            <display width="320" height="240" color_format="RGB565"/>
+            <memory name="ext_ram" size="2M"/>
+            <memory name="int_flash" size="512K"/>
+        </target>
+    </targets>
+</project>
