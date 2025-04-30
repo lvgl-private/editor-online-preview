@@ -81,6 +81,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDE_DIRS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     LV_CONF_INCLUDE_SIMPLE
     LV_CONF_PATH="${LVGL_CONF_DIR}/lv_conf.h"
+    LV_EDITOR_PREVIEW
 )
 
 # Link libraries
