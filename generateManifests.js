@@ -90,7 +90,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
 
   try {
-    generateProjectManifest(fullPath, fullPath, true);
+    generateProjectManifest(fullPath, targetDir, true);
     generateResourcesManifest("resources/lvgl/xmls/", "resources/lvgl/xmls/", true);
     console.log(`Manifests generated for: ${fullPath}`);
   } catch (error) {
