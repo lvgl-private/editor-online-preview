@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
+
 # Enable verbose make output
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -33,26 +34,19 @@ set(COMMON_INCLUDE_DIRS
     ${USER_SRC_DIR}
 )
 
+# WILLIAM TODO: make all sources captured from auto-generated list of .c files
+
 # Find all user sources
-if(USER_SRC_DIR AND EXISTS "${USER_SRC_DIR}/widgets")
-    file(GLOB WIDGET_SOURCES "${USER_SRC_DIR}/widgets/*/*.c")
-endif()
-
-if(USER_SRC_DIR AND EXISTS "${USER_SRC_DIR}/components")
-    file(GLOB COMPONENT_SOURCES "${USER_SRC_DIR}/components/*.c""${USER_SRC_DIR}/components/*/*.c")
-endif()
-
-# fonts converted to .c files will be in /fonts
-if(USER_SRC_DIR AND EXISTS "${USER_SRC_DIR}/fonts")
-    file(GLOB FONT_SOURCES "${USER_SRC_DIR}/fonts/*.c""${USER_SRC_DIR}/fonts/*/*.c")
-endif()
-
-# images converted to .c files will be in /images
-if(USER_SRC_DIR AND EXISTS "${USER_SRC_DIR}/images")
-    file(GLOB IMAGE_SOURCES "${USER_SRC_DIR}/images/*.c""${USER_SRC_DIR}/images/*/*.c")
-endif()
-
 file(GLOB ALL_COMPONENT_FILES "${USER_SRC_DIR}/*/*")
+
+file(GLOB SCREEN_SOURCES "${USER_SRC_DIR}/screens/*.c" "${USER_SRC_DIR}/screens/*/*.c")
+file(GLOB WIDGET_SOURCES "${USER_SRC_DIR}/widgets/*.c" "${USER_SRC_DIR}/widgets/*/*.c")
+file(GLOB COMPONENT_SOURCES "${USER_SRC_DIR}/components/*.c" "${USER_SRC_DIR}/components/*/*.c")
+# fonts converted to .c files will be in /fonts
+file(GLOB FONT_SOURCES "${USER_SRC_DIR}/fonts/*.c" "${USER_SRC_DIR}/fonts/*/*.c")
+# images converted to .c files will be in /images
+file(GLOB IMAGE_SOURCES "${USER_SRC_DIR}/images/*.c" "${USER_SRC_DIR}/images/*/*.c")
+
 file(APPEND "${OUTPUT_DIR}/build.log" "\nAll files in components directory:\n${COMPONENT_SOURCES}\n")
 
 # Find all source files in USER_SRC_DIR and CMAKE_SOURCE_DIR/src
@@ -66,8 +60,9 @@ set(PROJECT_SOURCES
 )
 
 # Create the executable with all sources
-add_executable(${PROJECT_NAME} 
+add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
+    ${SCREEN_SOURCES}
     ${WIDGET_SOURCES}
     ${COMPONENT_SOURCES}
     ${FONT_SOURCES}
@@ -84,6 +79,11 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     LV_EDITOR_PREVIEW
 )
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    LV_EDITOR_PREVIEW=1
+    LV_USE_XML=1
+)
+
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
     "${CMAKE_SOURCE_DIR}/lib/liblvgl.a"
@@ -94,8 +94,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 set(BASE_EXPORTED_FUNCTIONS
     "['_malloc', '_free', \
     '_lvrt_initialize', '_ui_init', '_lvrt_cleanup_runtime', \
-    '_lvrt_process_data', '_lvrt_xml_load_component_data',  \
-    '_lvrt_resize_canvas', '_lvrt_get_obj_area']"
+    '_lvrt_process_data', '_lvrt_xml_load_component_data', \
+    '_lvrt_resize_canvas', '_lvrt_get_obj_area', \
+    '_lvrt_xml_load_translations', '_lvrt_translation_set_language', \
+    '_lvrt_xml_test_register_from_data', '_lvrt_xml_test_run_init', '_lvrt_xml_test_run_next', '_lvrt_xml_test_run_stop', \
+    '_lvrt_set_subject_int', '_lvrt_set_subject_string', '_lvrt_subscribe_subject', \
+    '_lvrt_get_view_type']"
 )
 
 # Combine with additional functions if provided and log the information

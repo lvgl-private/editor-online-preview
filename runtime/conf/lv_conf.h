@@ -24,6 +24,10 @@
 
 
 #define LV_USE_XML	1
+#define LV_USE_TEST 1
+#define LV_USE_TEST_SCREENSHOT_COMPARE 1
+
+#define LV_USE_TRANSLATION 1
 
 #define LV_USE_OBJ_NAME 1
 
@@ -282,8 +286,8 @@
 #define LV_USE_ASSERT_OBJ           1   /*Check the object's type and existence (e.g. not deleted). (Slow)*/
 
 /*Add a custom handler when assert happens e.g. to restart the MCU*/
-#define LV_ASSERT_HANDLER_INCLUDE <stdint.h>
-#define LV_ASSERT_HANDLER while(1);   /*Halt by default*/
+#define LV_ASSERT_HANDLER_INCLUDE LV_SDL_INCLUDE_PATH
+#define LV_ASSERT_HANDLER while(1) {SDL_Delay(1);}     /**< Halt by default */
 
 /*-------------
  * Debug
@@ -314,11 +318,11 @@
  *Used by image decoders such as `lv_lodepng` to keep the decoded image in the memory.
  *If size is not set to 0, the decoder will fail to decode when the cache is full.
  *If size is 0, the cache function is not enabled and the decoded mem will be released immediately after use.*/
-#define LV_CACHE_DEF_SIZE       0
+#define LV_CACHE_DEF_SIZE       (2*1024*1024)
 
 /*Default number of image header cache entries. The cache is used to store the headers of images
  *The main logic is like `LV_CACHE_DEF_SIZE` but for image headers.*/
-#define LV_IMAGE_HEADER_CACHE_DEF_CNT 0
+#define LV_IMAGE_HEADER_CACHE_DEF_CNT 32
 
 /*Number of stops allowed per gradient. Increase this to allow more stops.
  *This adds (sizeof(lv_color_t) + 1) bytes per additional stop*/

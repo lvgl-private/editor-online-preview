@@ -6,10 +6,8 @@
 #include <lvgl/src/lvgl_private.h>
 #include <time.h>
 
-#define SDL_HINT_EMSCRIPTEN_CANVAS_SELECTOR "SDL_EMSCRIPTEN_CANVAS_SELECTOR"
 
-bool lvrt_is_not_known_object = false;
-char lvrt_unknown_widget_name[256] = {0};  // Buffer to store the unknown widget name
+#define SDL_HINT_EMSCRIPTEN_CANVAS_SELECTOR "SDL_EMSCRIPTEN_CANVAS_SELECTOR"
 
 // Expose logs to JavaScript
 EM_JS(void, js_log_callback, (const char* message), {
@@ -26,33 +24,36 @@ EM_JS(void, js_render_error, (const char* message), {
 
 // Expose XML is rendered to JavaScript
 EM_JS(void, js_xml_is_rendered, (void),  {
-    if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('xml-is-rendered'));
-    }
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('xml-is-rendered'));
+  }
+});
+
+// Add these EM_JS declarations at the top with other EM_JS functions
+EM_JS(void, js_dispatch_subject_event_int, (const char* name, int32_t value), {
+  if (typeof window !== 'undefined' && window.previewStore) {
+    const {setSubject} = window.previewStore.getState();
+    setSubject({
+      name: UTF8ToString(name),
+      type: 'int',
+      value: value
+    });
+  }
+});
+
+EM_JS(void, js_dispatch_subject_event_string, (const char* name, const char* value), {
+  if (typeof window !== 'undefined' && window.previewStore) {
+    const {setSubject} = window.previewStore.getState();
+    setSubject({
+      name: UTF8ToString(name),
+      type: 'string',
+      value: UTF8ToString(value)
+    });
+  }
 });
 
 void lvrt_log_cb(int8_t level, const char* buf)
 {
-    // Match format: "'name' is not a known widget, element, or component"
-    if (strstr(buf, "not a known widget") != NULL) {
-        // Extract name between single quotes
-        const char* start = strchr(buf, '\'');
-        if (start) {
-            start++;  // Skip first quote
-            int i = 0;
-            while (start[i] && start[i] != '\'' && i < 255) {
-                lvrt_unknown_widget_name[i] = start[i];
-                i++;
-            }
-            lvrt_unknown_widget_name[i] = '\0';
-        }
-        
-        lvrt_is_not_known_object = true;
-        
-        char error_msg[512];
-        snprintf(error_msg, sizeof(error_msg), "Invalid or unknown element: <%s>", lvrt_unknown_widget_name);
-        js_render_error(error_msg);
-    }
     js_log_callback(buf);
 }
 
@@ -62,8 +63,6 @@ static lv_obj_t* g_fullscreen_obj = NULL;
 static unsigned int runtime_id = 0;
 
 int lvrt_initialize(const char *canvas_selector){
-
-  lvrt_is_not_known_object = false;
   
   // Generate a new runtime ID for tracking
   runtime_id = (unsigned int)time(NULL);
@@ -88,11 +87,7 @@ int lvrt_initialize(const char *canvas_selector){
 
   lv_sdl_window_set_title(display, "LVGL Editor");
 
-  lv_group_t *group = lv_group_get_default();
-  lv_group_set_default(lv_group_create());
-
-  lv_indev_t * mouse = lv_sdl_mouse_create();
-  lv_indev_set_group(mouse, group);
+  lv_indev_t *mouse = lv_sdl_mouse_create();
 
   /* lv_indev_t * mousewheel = lv_sdl_mousewheel_create();
   lv_indev_set_group(mousewheel, group); */
@@ -118,9 +113,8 @@ void lvrt_task_handler(){
   lv_task_handler();
 }
 
-int lvrt_process_data(const char *xml_definition, const char *display_style[]){
+int lvrt_process_data(const char *xml_definition, const char *display_style[], const char *xml_type, const char *language){
 
-  lvrt_is_not_known_object = false;
 
   lv_display_t *display = lv_display_get_default();
 
@@ -133,27 +127,34 @@ int lvrt_process_data(const char *xml_definition, const char *display_style[]){
     return 1;
   }
 
-  lv_obj_t * screen = lv_xml_create(NULL, "lv_obj", display_style);
+  lv_translation_set_language(language);
+
+  if (lv_streq(xml_type, "test")) {
+    lv_xml_component_scope_t * scope = lv_xml_component_get_scope("thisview");
+    lv_xml_component_scope_t * extends_scope = lv_xml_component_get_scope(scope->extends);
+
+    if(extends_scope && extends_scope->is_screen) xml_type = "screen";
+}
+
+  lv_obj_t * screen;
+  lv_obj_t * ui;
+
   lv_obj_t * scr_prev = lv_screen_active();
+  
+  if(lv_streq(xml_type, "screen")) {
+  	screen = lv_xml_create(NULL, "thisview", display_style);
+    ui = screen;
+  } else {
+    screen = lv_xml_create(NULL, "lv_obj", display_style);
+    ui = lv_xml_create(screen, "thisview", NULL);
+  }
+
   lv_screen_load(screen);
   lv_obj_delete(scr_prev);
 
-  lv_obj_t * ui = lv_xml_create(screen, "thisview", NULL);
   
   if(ui == NULL){
     LV_LOG_WARN("Ouch! UI is null.");
-    return 1;
-  }
-  else if (lvrt_is_not_known_object) {
-    LV_LOG_WARN("Not a known widget, element, or component");
-    
-    // Clean screen first
-    lv_obj_clean(screen);
-    
-
-    lvrt_is_not_known_object = false;
-    lvrt_unknown_widget_name[0] = '\0';
-    
     return 1;
   }
 
@@ -163,7 +164,6 @@ int lvrt_process_data(const char *xml_definition, const char *display_style[]){
 
   return 0;
 }
-
 
 int lvrt_xml_load_component_data(const char *name, const char *xml_definition) {
   
@@ -181,9 +181,52 @@ int lvrt_xml_load_component_data(const char *name, const char *xml_definition) {
   return 0;
 }
 
+
+int lvrt_xml_load_translations(const char *translations_path){
+  lv_result_t result = lv_xml_translation_register_from_file(translations_path);
+  if(result != LV_RESULT_OK) {
+    LV_LOG_WARN("Failed to register translations from file %s", translations_path);
+    return 1;
+  }
+  return 0;
+}
+
+void lvrt_translation_set_language(const char *language){
+  lv_translation_set_language(language);
+  lv_obj_t* screen = lv_screen_active();
+  lv_obj_clean(screen);
+  lv_xml_create(screen, "thisview", NULL);  // We don't need to pass styles here since the component is already registered with its styles
+}
+
+int32_t editor_obj_get_click_area(const lv_obj_t * obj)
+{
+    if(obj->spec_attr == NULL)  return 0;
+    return obj->spec_attr->ext_click_pad;
+}
+
 EMSCRIPTEN_KEEPALIVE
-bool lvrt_get_obj_area(const char* name_path, int* x, int* y, int* width, int* height, int* layout_positioned, int* alignment) {
-    if (name_path == NULL || x == NULL || y == NULL || width == NULL || height == NULL || layout_positioned == NULL || alignment == NULL) {
+const char* lvrt_get_view_type(const char* root_element_name)
+{
+	/*Returning const char * local variables is not safe as they can be only in the stack*/
+	static const char * component_str = "component";
+	static const char * screen_str = "screen";
+
+	/*Decide if a test extends a screen or a component*/
+	if (lv_streq(root_element_name, "test")) {
+		lv_xml_component_scope_t * scope = lv_xml_component_get_scope("thisview");
+		if(scope == NULL) return component_str; /*Fallback if the XMLs are not loaded yet*/
+
+		lv_xml_component_scope_t * extends_scope = lv_xml_component_get_scope(scope->extends);
+		if(extends_scope && extends_scope->is_screen) return screen_str;
+		else return component_str;
+	} else {
+		return component_str;
+	}
+}
+
+EMSCRIPTEN_KEEPALIVE
+bool lvrt_get_obj_area(const char* name_path, int* x, int* y, int* width, int* height, int* layout_positioned, int* alignment, int* pad_top, int* pad_right, int* pad_bottom, int* pad_left, int* margin_top, int* margin_right, int* margin_bottom, int* margin_left, int* hitarea) {
+    if (name_path == NULL || x == NULL || y == NULL || width == NULL || height == NULL || layout_positioned == NULL || alignment == NULL || pad_top == NULL || pad_right == NULL || pad_bottom == NULL || pad_left == NULL || margin_top == NULL || margin_right == NULL || margin_bottom == NULL || margin_left == NULL || hitarea == NULL) {
         LV_LOG_WARN("lvrt_get_obj_area: Invalid parameters");
         return false;
     }
@@ -203,6 +246,58 @@ bool lvrt_get_obj_area(const char* name_path, int* x, int* y, int* width, int* h
      // Store whether the object is layout positioned
     *layout_positioned = lv_obj_is_layout_positioned(obj) ? 1 : 0;
     *alignment = (int)lv_obj_get_style_align(obj, LV_PART_MAIN);
+
+    *pad_top = (int)lv_obj_get_style_pad_top(obj, LV_PART_MAIN);
+    *pad_right = (int)lv_obj_get_style_pad_right(obj, LV_PART_MAIN);
+    *pad_bottom = (int)lv_obj_get_style_pad_bottom(obj, LV_PART_MAIN);
+    *pad_left = (int)lv_obj_get_style_pad_left(obj, LV_PART_MAIN);
+    
+    *margin_top = (int)lv_obj_get_style_margin_top(obj, LV_PART_MAIN);
+    *margin_right = (int)lv_obj_get_style_margin_right(obj, LV_PART_MAIN);
+    *margin_bottom = (int)lv_obj_get_style_margin_bottom(obj, LV_PART_MAIN);
+    *margin_left = (int)lv_obj_get_style_margin_left(obj, LV_PART_MAIN);
+
+    *hitarea = editor_obj_get_click_area(obj);
+    
+    return true;
+}
+
+EMSCRIPTEN_KEEPALIVE
+void lvrt_set_subject_int(const char* name, int32_t v) {
+  lv_subject_t* subject =  lv_xml_get_subject(NULL, name);
+  lv_subject_set_int(subject, v);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void lvrt_set_subject_string(const char* name, const char* v) {
+  lv_subject_t* subject =  lv_xml_get_subject(NULL, name);
+  lv_subject_copy_string(subject, v);
+}
+
+// Observer callback that fires a JS event
+static void subject_changed_cb(lv_observer_t* observer, lv_subject_t* subject) {
+    const char* name = lv_observer_get_user_data(observer);
+    if (subject->type == LV_SUBJECT_TYPE_STRING) {
+        const char* str_value = lv_subject_get_string(subject);
+        js_dispatch_subject_event_string(name, str_value);
+    } else if (subject->type == LV_SUBJECT_TYPE_INT) {
+        int32_t int_value = lv_subject_get_int(subject);
+        js_dispatch_subject_event_int(name, int_value);
+    }
+}
+
+EMSCRIPTEN_KEEPALIVE
+bool lvrt_subscribe_subject(const char* name) {
+    lv_subject_t* subject = lv_xml_get_subject(NULL, name);
+    if (!subject) {
+        return false;
+    }
+    
+    // Create observer for the subject
+    lv_observer_t* observer = lv_subject_add_observer(subject, subject_changed_cb, lv_strdup(name));
+    if (!observer) {
+        return false;
+    }
     
     return true;
 }
@@ -211,6 +306,7 @@ EMSCRIPTEN_KEEPALIVE
 void lvrt_resize_canvas(int width, int height) {
   lv_display_t *display = lv_display_get_default();
   lv_display_set_resolution(display, width, height);
+  lv_refr_now(NULL);
 }
 
 EMSCRIPTEN_KEEPALIVE
@@ -233,4 +329,34 @@ void lvrt_cleanup_runtime(){
   lv_deinit();
   
   LV_LOG_USER("Cleaning up runtime is complete ID: %u", runtime_id);
+}
+
+
+EMSCRIPTEN_KEEPALIVE
+int lvrt_xml_test_register_from_data(const char *xml_definition, const char * ref_image_path_prefix){
+
+  lv_result_t result = lv_xml_test_register_from_data(xml_definition, ref_image_path_prefix);
+
+  if(result != LV_RESULT_OK){
+    LV_LOG_WARN("Error processing test data.");
+    LV_LOG_WARN("XML definition: %s", xml_definition);
+    return 1;
+  }
+
+  return 0;
+}
+
+EMSCRIPTEN_KEEPALIVE
+void lvrt_xml_test_run_init(){
+  lv_xml_test_run_init();
+}
+
+EMSCRIPTEN_KEEPALIVE
+bool lvrt_xml_test_run_next(uint32_t slowdown){
+  return lv_xml_test_run_next(slowdown);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void lvrt_xml_test_run_stop(){
+  lv_xml_test_run_stop();
 }

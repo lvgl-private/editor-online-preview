@@ -1,0 +1,44 @@
+<svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+>
+    <rect
+        x="8"
+        y="2"
+        width="4"
+        height="4"
+        rx="1.5"
+        transform="rotate(45 8 2)"
+        fill="currentColor"
+    />
+    <rect
+        x="11.5355"
+        y="5.53553"
+        width="4"
+        height="4"
+        rx="1.5"
+        transform="rotate(45 11.5355 5.53553)"
+        fill="currentColor"
+    />
+    <rect
+        x="8"
+        y="9.07107"
+        width="4"
+        height="4"
+        rx="1.5"
+        transform="rotate(45 8 9.07107)"
+        fill="currentColor"
+    />
+    <rect
+        x="4.46447"
+        y="5.53553"
+        width="4"
+        height="4"
+        rx="1.5"
+        transform="rotate(45 4.46447 5.53553)"
+        fill="currentColor"
+    />
+</svg>
