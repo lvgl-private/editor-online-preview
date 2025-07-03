@@ -10,10 +10,10 @@ option(LV_BUILD_EXAMPLES "Build LVGL examples" OFF)
 option(LVGL_STATIC_LIB "Build LVGL as a static library" ON)
 
 # Set LVGL paths
-set(LVGL_SRC_DIR "/lved/resources/lvgl/src")
-set(LVGL_INC_DIR "/lved/resources/lvgl")
-set(LVGL_CONF_PATH "/lved/resources/conf/lv_conf.h")
-set(LVGL_CONF_DIR "/lved/resources/conf")
+set(LVGL_SRC_DIR "${CMAKE_SOURCE_DIR}/../lvgl/src")
+set(LVGL_INC_DIR "${CMAKE_SOURCE_DIR}/../lvgl")
+set(LVGL_CONF_PATH "${CMAKE_SOURCE_DIR}/../conf/lv_conf.h")
+set(LVGL_CONF_DIR "${CMAKE_SOURCE_DIR}/../conf")
 
 # Collect all LVGL source files
 file(GLOB_RECURSE LVGL_SOURCES
