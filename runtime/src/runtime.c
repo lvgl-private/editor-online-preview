@@ -113,13 +113,15 @@ void lvrt_task_handler(){
   lv_task_handler();
 }
 
-int lvrt_process_data(const char *xml_definition, const char *display_style[], const char *xml_type, const char *language){
-
+int lvrt_process_data(const char *xml_definition, const char *name, const char *display_style[], const char *xml_type, const char *language){
 
   lv_display_t *display = lv_display_get_default();
 
   lv_xml_component_unregister("thisview");
+
+
   lv_result_t result = lv_xml_component_register_from_data("thisview", xml_definition);
+
 
   if(result != LV_RESULT_OK){
     LV_LOG_WARN("Error processing data.");
@@ -133,7 +135,10 @@ int lvrt_process_data(const char *xml_definition, const char *display_style[], c
     lv_xml_component_scope_t * scope = lv_xml_component_get_scope("thisview");
     lv_xml_component_scope_t * extends_scope = lv_xml_component_get_scope(scope->extends);
 
-    if(extends_scope && extends_scope->is_screen) xml_type = "screen";
+    if(extends_scope && extends_scope->is_screen) {
+      xml_type = "screen";
+      name = scope->extends;
+    }
 }
 
   lv_obj_t * screen;
@@ -141,8 +146,18 @@ int lvrt_process_data(const char *xml_definition, const char *display_style[], c
 
   lv_obj_t * scr_prev = lv_screen_active();
   
+  /*Delete the already created permanent screen as we want use the
+   current xml_definition not the earlier registered one*/
+  lv_obj_t * scr_permanent_prev = NULL;
+  if(lv_streq(xml_type, "screen") && name) {
+	  scr_permanent_prev = lv_display_get_screen_by_name(NULL, name);
+  }
+  
   if(lv_streq(xml_type, "screen")) {
   	screen = lv_xml_create(NULL, "thisview", display_style);
+    if (name) {
+      lv_obj_set_name(screen, name);
+    }
     ui = screen;
   } else {
     screen = lv_xml_create(NULL, "lv_obj", display_style);
@@ -150,8 +165,11 @@ int lvrt_process_data(const char *xml_definition, const char *display_style[], c
   }
 
   lv_screen_load(screen);
-  lv_obj_delete(scr_prev);
 
+  if(scr_permanent_prev != scr_prev && scr_permanent_prev != NULL) {
+    lv_obj_delete(scr_permanent_prev);
+  }
+  lv_obj_delete(scr_prev);
   
   if(ui == NULL){
     LV_LOG_WARN("Ouch! UI is null.");
@@ -181,7 +199,13 @@ int lvrt_xml_load_component_data(const char *name, const char *xml_definition) {
   return 0;
 }
 
+EMSCRIPTEN_KEEPALIVE
+int lvrt_component_create(const char *name) {
+  lv_obj_t * component = lv_xml_create(NULL, name, NULL);
+  return component? 0 : 1;
+}
 
+EMSCRIPTEN_KEEPALIVE
 int lvrt_xml_load_translations(const char *translations_path){
   lv_result_t result = lv_xml_translation_register_from_file(translations_path);
   if(result != LV_RESULT_OK) {
@@ -191,6 +215,7 @@ int lvrt_xml_load_translations(const char *translations_path){
   return 0;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void lvrt_translation_set_language(const char *language){
   lv_translation_set_language(language);
   lv_obj_t* screen = lv_screen_active();
@@ -272,6 +297,12 @@ EMSCRIPTEN_KEEPALIVE
 void lvrt_set_subject_string(const char* name, const char* v) {
   lv_subject_t* subject =  lv_xml_get_subject(NULL, name);
   lv_subject_copy_string(subject, v);
+}
+
+EMSCRIPTEN_KEEPALIVE
+void lvrt_set_subject_float(const char* name, float v) {
+  lv_subject_t* subject =  lv_xml_get_subject(NULL, name);
+  lv_subject_set_float(subject, v);
 }
 
 // Observer callback that fires a JS event

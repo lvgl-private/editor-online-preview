@@ -76,7 +76,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDE_DIRS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     LV_CONF_INCLUDE_SIMPLE
     LV_CONF_PATH="${LVGL_CONF_DIR}/lv_conf.h"
-    LV_EDITOR_PREVIEW
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -94,11 +93,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 set(BASE_EXPORTED_FUNCTIONS
     "['_malloc', '_free', \
     '_lvrt_initialize', '_ui_init', '_lvrt_cleanup_runtime', \
-    '_lvrt_process_data', '_lvrt_xml_load_component_data', \
+    '_lvrt_process_data', '_lvrt_xml_load_component_data', '_lvrt_component_create', \
     '_lvrt_resize_canvas', '_lvrt_get_obj_area', \
     '_lvrt_xml_load_translations', '_lvrt_translation_set_language', \
     '_lvrt_xml_test_register_from_data', '_lvrt_xml_test_run_init', '_lvrt_xml_test_run_next', '_lvrt_xml_test_run_stop', \
-    '_lvrt_set_subject_int', '_lvrt_set_subject_string', '_lvrt_subscribe_subject', \
+    '_lvrt_set_subject_int', '_lvrt_set_subject_string', '_lvrt_set_subject_float', '_lvrt_subscribe_subject', \
     '_lvrt_get_view_type']"
 )
 
